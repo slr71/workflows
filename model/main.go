@@ -19,3 +19,19 @@ type ErrorResponse struct {
 	// A message describing the error.
 	Message string `json:"message"`
 }
+
+// VersionRootResponse describes the response of the root enpdpoint for an API version.
+type VersionRootResponse struct {
+
+	// The name of the service.
+	Service string `json:"service"`
+
+	// The service title.
+	Title string `json:"title"`
+
+	// The service version.
+	Version string `json:"version"`
+
+	// The API version.
+	APIVersion string `json:"api_version"`
+}

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	v1 "github.com/cyverse-de/workflows/api/v1"
 	"github.com/cyverse-de/workflows/common"
 	"github.com/cyverse-de/workflows/model"
 	"github.com/labstack/echo"
@@ -34,4 +35,18 @@ func (a API) RootHandler(ctx echo.Context) error {
 // RegisterHandlers registers the supported request handlers.
 func (a API) RegisterHandlers() {
 	a.Echo.GET("/", a.RootHandler)
+
+	// Register the group for API version 1.
+	v1Group := a.Echo.Group("/v1")
+	v1API := v1.API{
+		Echo:         a.Echo,
+		Group:        v1Group,
+		AMQPSettings: a.AMQPSettings,
+		AMQPClient:   a.AMQPClient,
+		DB:           a.DB,
+		Service:      a.Service,
+		Title:        a.Title,
+		Version:      a.Version,
+	}
+	v1API.RegisterHandlers()
 }
