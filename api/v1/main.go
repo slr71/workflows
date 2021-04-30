@@ -36,4 +36,5 @@ func (a API) RootHandler(ctx echo.Context) error {
 // RegisterHandlers registers the supported request handlers.
 func (a API) RegisterHandlers() {
 	a.Group.GET("", a.RootHandler)
+	a.Group.GET("/", a.RootHandler)
 }

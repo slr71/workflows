@@ -18,6 +18,7 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/cyverse-de/configurate v0.0.0-20190318152107-8f767cb828d9/go.mod h1:QMZ4G8bX5f0vKiH9+/2JqV687mN1byJ18tjZwIJIagI=
+github.com/cyverse-de/dbutil v0.0.0-20170404194641-04e85e2737c9 h1:RdWfP04KnGOpFrtviAc3aRBCVU7h4Ch9oqZC6MudYzY=
 github.com/cyverse-de/dbutil v0.0.0-20170404194641-04e85e2737c9/go.mod h1:ExgEsAIPqEEtubF/XyUlj8+4ReFsbyT9QChN6EsorN8=
 github.com/cyverse-de/echo-middleware v0.1.0/go.mod h1:KMUY9NZ8firxeczAZhOiVA0b7chJzzkaCCf1aJIyCeo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
