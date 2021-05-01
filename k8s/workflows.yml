@@ -1,0 +1,132 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: workflow-role
+rules:
+# pod get/watch is used to identify the container IDs of the current pod
+# pod patch is used to annotate the step's outputs back to controller (e.g. artifact location)
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - patch
+# logs get/watch are used to get the pods logs for script outputs, and for log archival
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+  - watch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflows
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: workflow-default-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: workflow-role
+subjects:
+- kind: ServiceAccount
+  name: workflows
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflows
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      de-app: workflows
+  template:
+    metadata:
+      labels:
+        de-app: workflows
+        app: de
+    spec:
+      serviceAccountName: workflows
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: de-app
+                operator: In
+                values:
+                - workflows
+            topologyKey: kubernetes.io/hostname
+      restartPolicy: Always
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          configMap:
+            name: timezone
+            items:
+              - key: timezone
+                path: timezone
+        - name: service-configs
+          secret:
+            secretName: service-configs
+            items:
+              - key: jobservices.yml
+                path: jobservices.yml
+      containers:
+      - name: workflows
+        image: discoenv/workflows
+        resources:
+          requests:
+            cpu: "1m"
+            memory: "128Mi"
+          limits:
+            cpu: "100m"
+            memory: "256Mi"
+        ports:
+          - name: listen-port
+            containerPort: 8080
+        volumeMounts:
+          - name: localtime
+            mountPath: /etc/localtime
+            readOnly: true
+          - name: timezone
+            mountPath: /etc/timezone
+            subPath: timezone
+          - name: service-configs
+            mountPath: /etc/iplant/de
+            readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflows
+spec:
+  selector:
+    de-app: workflows
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: listen-port
